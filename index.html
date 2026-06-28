@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2A8CFE">
+<meta name="description" content="Guui Music Chart 10 - 오늘 친구들이 가장 좋아한 노래">
+<title>Guui Music Chart 10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Poppins:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  ::-webkit-scrollbar{width:0;height:0}
+  html,body{
+    height:100%;margin:0;overflow:hidden;
+    font-family:'Noto Sans KR',sans-serif;
+    background:#F5FAFF;
+  }
+
+  .app{
+    position:relative;
+    width:100%;height:100%;
+    max-width:480px;
+    margin:0 auto;
+    display:flex;flex-direction:column;
+    background:#F5FAFF;
+  }
+
+  /* ── Header ── */
+  .header{
+    position:relative;flex:none;
+    padding:env(safe-area-inset-top,0) 0 0;
+    background:linear-gradient(135deg,#4FACFE 0%,#2A8CFE 55%,#00C6FB 100%);
+    overflow:hidden;
+  }
+  .header-inner{padding:0 0 16px}
+  .header-circle-1{
+    position:absolute;right:-24px;top:-28px;width:130px;height:130px;
+    border-radius:50%;background:rgba(255,255,255,.16);
+  }
+  .header-circle-2{
+    position:absolute;right:80px;top:50px;width:46px;height:46px;
+    border-radius:50%;background:rgba(255,255,255,.13);
+  }
+  .status-bar{
+    position:relative;display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px 0;color:#fff;font-size:12px;font-weight:600;
+  }
+  .header-content{position:relative;padding:10px 20px 0;color:#fff}
+  .header-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:25px;line-height:1}
+  .header-sub{font-size:12px;opacity:.92;margin-top:5px}
+
+  /* ── Song list ── */
+  .song-list{
+    flex:1;overflow-y:auto;overflow-x:hidden;
+    padding:8px 0 10px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .song-row{
+    display:flex;align-items:center;gap:11px;padding:11px 16px;
+    border-bottom:1px solid #EAF1F8;
+    transition:background .15s;
+  }
+  .song-row:active{background:rgba(42,140,254,.04)}
+  .rank-num{
+    flex:none;width:26px;text-align:center;
+    font-family:'Jua',sans-serif;font-size:22px;
+    transition:color .2s;
+  }
+  .cover-btn{
+    flex:none;width:50px;height:50px;border-radius:15px;border:none;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    padding:0;font-size:25px;transition:transform .1s;
+  }
+  .cover-btn:active{transform:scale(.94)}
+  .song-info{flex:1;min-width:0}
+  .song-title{
+    font-size:14px;font-weight:700;color:#23303F;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:color .2s;
+  }
+  .song-artist{font-size:12px;color:#94A3B4;margin-top:2px;transition:color .2s}
+  .like-btn{
+    display:flex;align-items:center;gap:5px;border:none;cursor:pointer;
+    border-radius:999px;padding:7px 12px;transition:transform .1s,background .2s;
+  }
+  .like-btn:active{transform:scale(.9)}
+  .like-btn .heart{font-size:15px}
+  .like-btn .count{font-size:12px;font-weight:700;transition:color .2s}
+
+  /* ── Bottom player ── */
+  .player{
+    flex:none;
+    padding:0 16px;padding-bottom:env(safe-area-inset-bottom,0);
+    height:calc(86px + env(safe-area-inset-bottom,0px));
+    background:rgba(255,255,255,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid rgba(42,140,254,.18);
+    display:flex;align-items:center;gap:12px;
+  }
+  .player-cover{
+    flex:none;width:50px;height:50px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;font-size:24px;
+  }
+  .player-info{flex:1;min-width:0}
+  .player-title{
+    font-size:13px;font-weight:700;color:#23303F;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .progress-track{margin-top:7px;height:5px;border-radius:999px;background:#E4EEF8}
+  .progress-fill{height:5px;border-radius:999px;background:linear-gradient(90deg,#2A8CFE,#00C6FB);transition:width .35s linear}
+  .play-btn{
+    flex:none;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(135deg,#2A8CFE,#00C6FB);color:#fff;font-size:17px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 14px rgba(42,140,254,.4);transition:transform .1s;
+  }
+  .play-btn:active{transform:scale(.92)}
+
+  /* ── Desktop: center and frame ── */
+  @media (min-width:481px){
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at 30% 20%,#E8F4FF,#DCEBFF 60%,#D2E4FF);
+    }
+    .app{
+      height:min(800px, 95vh);
+      border-radius:46px;overflow:hidden;
+      box-shadow:0 30px 70px rgba(40,90,160,.28);border:7px solid #fff;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-circle-1"></div>
+    <div class="header-circle-2"></div>
+    <div class="header-inner">
+      <div class="status-bar"><span>9:41</span><span>🎧 키즈차트</span></div>
+      <div class="header-content">
+        <div class="header-title">Guui Music Chart 10 🎧</div>
+        <div class="header-sub">오늘 친구들이 가장 좋아한 노래</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="song-list" id="songList"></div>
+
+  <div class="player">
+    <div class="player-cover" id="playerCover"><span>🎵</span></div>
+    <div class="player-info">
+      <div class="player-title" id="playerTitle">재생할 노래를 골라보세요</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <button class="play-btn" id="playBtn">▶</button>
+  </div>
+</div>
+
+<script>
+const songs = [
+  {id:'shark',   title:'상어가족',         artist:'핑크퐁',       emoji:'🦈', c1:'#36D1DC', c2:'#5B86E5', likes:58455, ord:0, liked:false},
+  {id:'bear',    title:'곰 세 마리',        artist:'동요나라',     emoji:'🐻', c1:'#F6D365', c2:'#FDA085', likes:67245, ord:1, liked:false},
+  {id:'star',    title:'반짝반짝 작은 별',   artist:'키즈싱어즈',   emoji:'⭐', c1:'#A18CD1', c2:'#FBC2EB', likes:44971, ord:2, liked:false},
+  {id:'flower',  title:'모두 다 꽃이야',     artist:'우리합창단',   emoji:'🌸', c1:'#FF9A9E', c2:'#FECFEF', likes:41921, ord:3, liked:false},
+  {id:'stop',    title:'그대로 멈춰라',      artist:'율동친구들',   emoji:'🛑', c1:'#FF6A88', c2:'#FF99AC', likes:71090, ord:4, liked:false},
+  {id:'head',    title:'머리 어깨 무릎 발',   artist:'체조교실',     emoji:'🙆', c1:'#43E97B', c2:'#38F9D7', likes:39210, ord:5, liked:false},
+  {id:'sun',     title:'둥근 해가 떴습니다',  artist:'아침동요',     emoji:'☀️', c1:'#FAD961', c2:'#F76B1C', likes:35120, ord:6, liked:false},
+  {id:'bike',    title:'자전거',            artist:'신나는음악',   emoji:'🚲', c1:'#4FACFE', c2:'#00F2FE', likes:29870, ord:7, liked:false},
+  {id:'rainbow', title:'무지개',            artist:'컬러키즈',     emoji:'🌈', c1:'#FA709A', c2:'#FEE140', likes:33450, ord:8, liked:false},
+  {id:'umbrella',title:'우산',              artist:'빗방울합창단', emoji:'☂️', c1:'#30CFD0', c2:'#5A4FCF', likes:26540, ord:9, liked:false},
+];
+
+let playing = {id: null, on: false};
+let progress = 0;
+
+function sorted() {
+  return [...songs].sort((a, b) => b.likes - a.likes || a.ord - b.ord);
+}
+
+function rankColor(rank) {
+  if (rank === 1) return '#FF9F1C';
+  if (rank === 2) return '#8CA0B3';
+  if (rank === 3) return '#E08E45';
+  return '#B0B8C1';
+}
+
+function toggleLike(id) {
+  const s = songs.find(x => x.id === id);
+  if (!s) return;
+  s.liked = !s.liked;
+  s.likes += s.liked ? 1 : -1;
+  render();
+}
+
+function playSong(id) {
+  if (playing.id === id) {
+    playing.on = !playing.on;
+  } else {
+    playing = {id, on: true};
+    progress = 0;
+  }
+  render();
+}
+
+function render() {
+  const list = sorted();
+  const container = document.getElementById('songList');
+  container.innerHTML = list.map((s, i) => {
+    const rank = i + 1;
+    return `
+      <div class="song-row">
+        <div class="rank-num" style="color:${rankColor(rank)}">${rank}</div>
+        <button class="cover-btn" style="background:linear-gradient(135deg,${s.c1},${s.c2})" data-play="${s.id}">
+          <span>${s.emoji}</span>
+        </button>
+        <div class="song-info">
+          <div class="song-title">${s.title}</div>
+          <div class="song-artist">${s.artist}</div>
+        </div>
+        <button class="like-btn" style="background:${s.liked ? '#FFE3EC' : '#EEF2F7'}" data-like="${s.id}">
+          <span class="heart">${s.liked ? '❤️' : '🤍'}</span>
+          <span class="count" style="color:${s.liked ? '#FF4D79' : '#9AA5B1'}">${s.likes.toLocaleString('ko-KR')}</span>
+        </button>
+      </div>`;
+  }).join('');
+
+  container.querySelectorAll('[data-like]').forEach(btn => {
+    btn.addEventListener('click', () => toggleLike(btn.dataset.like));
+  });
+  container.querySelectorAll('[data-play]').forEach(btn => {
+    btn.addEventListener('click', () => playSong(btn.dataset.play));
+  });
+
+  const nowSong = playing.id ? songs.find(x => x.id === playing.id) : null;
+  const cover = document.getElementById('playerCover');
+  const title = document.getElementById('playerTitle');
+  const playBtnEl = document.getElementById('playBtn');
+
+  if (nowSong) {
+    cover.style.background = `linear-gradient(135deg,${nowSong.c1},${nowSong.c2})`;
+    cover.innerHTML = `<span>${nowSong.emoji}</span>`;
+    title.textContent = nowSong.title;
+    playBtnEl.textContent = playing.on ? '⏸' : '▶';
+  } else {
+    cover.style.background = 'linear-gradient(135deg,#E0E7F0,#CBD5E1)';
+    cover.innerHTML = '<span>🎵</span>';
+    title.textContent = '재생할 노래를 골라보세요';
+    playBtnEl.textContent = '▶';
+  }
+  document.getElementById('progressFill').style.width = Math.round(progress) + '%';
+}
+
+document.getElementById('playBtn').addEventListener('click', () => {
+  if (!playing.id) return;
+  playing.on = !playing.on;
+  render();
+});
+
+setInterval(() => {
+  if (playing.on && playing.id) {
+    progress += 1.6;
+    if (progress >= 100) progress = 0;
+    document.getElementById('progressFill').style.width = Math.round(progress) + '%';
+  }
+}, 400);
+
+render();
+</script>
+</body>
+</html>
