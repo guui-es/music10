@@ -3,270 +3,549 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#2A8CFE">
-<meta name="description" content="Guui Music Chart 10 - 오늘 친구들이 가장 좋아한 노래">
 <title>Guui Music Chart 10</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Poppins:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   ::-webkit-scrollbar{width:0;height:0}
-  html,body{
-    height:100%;margin:0;overflow:hidden;
-    font-family:'Noto Sans KR',sans-serif;
-    background:#F5FAFF;
-  }
+  html,body{height:100%;margin:0;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:#F5FAFF;}
+  .app{position:relative;width:100%;height:100%;display:flex;flex-direction:column;background:#F5FAFF;}
 
-  .app{
-    position:relative;
-    width:100%;height:100%;
-    max-width:480px;
-    margin:0 auto;
-    display:flex;flex-direction:column;
-    background:#F5FAFF;
-  }
+  .header{position:relative;flex:none;background:linear-gradient(135deg,#4FACFE 0%,#2A8CFE 55%,#00C6FB 100%);overflow:hidden;}
+  .hc1{position:absolute;right:-24px;top:-28px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.16)}
+  .hc2{position:absolute;right:80px;top:50px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.13)}
+  .header-inner{padding:0 0 14px}
+  .status-bar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:12px 20px 0;color:#fff;font-size:12px;font-weight:600;}
+  .header-content{position:relative;padding:8px 20px 0;color:#fff}
+  .header-title{font-family:'Poppins',sans-serif;font-weight:800;line-height:1}
+  .header-sub{opacity:.92;margin-top:4px}
+  .tabs{display:flex;gap:7px;padding:10px 16px 0;flex-wrap:wrap;align-items:center;}
+  .tab-btn{border:none;cursor:pointer;border-radius:999px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:background .18s,color .18s,transform .1s;color:rgba(255,255,255,.7);background:rgba(255,255,255,.18);}
+  .tab-btn.active{background:#fff;color:#2A8CFE;}
+  .tab-btn:active{transform:scale(.93)}
+  .admin-btn{margin-left:auto;border:none;cursor:pointer;border-radius:999px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,255,255,.25);color:#fff;transition:background .18s,transform .1s;}
+  .admin-btn:active{transform:scale(.93)}
 
-  /* ── Header ── */
-  .header{
-    position:relative;flex:none;
-    padding:env(safe-area-inset-top,0) 0 0;
-    background:linear-gradient(135deg,#4FACFE 0%,#2A8CFE 55%,#00C6FB 100%);
-    overflow:hidden;
-  }
-  .header-inner{padding:0 0 16px}
-  .header-circle-1{
-    position:absolute;right:-24px;top:-28px;width:130px;height:130px;
-    border-radius:50%;background:rgba(255,255,255,.16);
-  }
-  .header-circle-2{
-    position:absolute;right:80px;top:50px;width:46px;height:46px;
-    border-radius:50%;background:rgba(255,255,255,.13);
-  }
-  .status-bar{
-    position:relative;display:flex;align-items:center;justify-content:space-between;
-    padding:12px 20px 0;color:#fff;font-size:12px;font-weight:600;
-  }
-  .header-content{position:relative;padding:10px 20px 0;color:#fff}
-  .header-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:25px;line-height:1}
-  .header-sub{font-size:12px;opacity:.92;margin-top:5px}
-
-  /* ── Song list ── */
-  .song-list{
-    flex:1;overflow-y:auto;overflow-x:hidden;
-    padding:8px 0 10px;
-    -webkit-overflow-scrolling:touch;
-  }
-  .song-row{
-    display:flex;align-items:center;gap:11px;padding:11px 16px;
-    border-bottom:1px solid #EAF1F8;
-    transition:background .15s;
-  }
-  .song-row:active{background:rgba(42,140,254,.04)}
-  .rank-num{
-    flex:none;width:26px;text-align:center;
-    font-family:'Jua',sans-serif;font-size:22px;
-    transition:color .2s;
-  }
-  .cover-btn{
-    flex:none;width:50px;height:50px;border-radius:15px;border:none;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    padding:0;font-size:25px;transition:transform .1s;
-  }
+  .song-list{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+  .song-row{display:flex;align-items:center;border-bottom:1px solid #EAF1F8;transition:background .15s;animation:fadeIn .22s ease both;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .song-row:active{background:rgba(42,140,254,.05)}
+  .rank-wrap{flex:none;text-align:center}
+  .rank-num{font-family:'Jua',sans-serif;line-height:1}
+  .rank-change{font-size:10px;margin-top:1px;font-weight:700}
+  .cover-btn{flex:none;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform .1s;position:relative;overflow:hidden;}
   .cover-btn:active{transform:scale(.94)}
+  .cover-btn .yt-badge{position:absolute;bottom:3px;right:3px;background:#FF0000;border-radius:3px;font-size:7px;color:#fff;padding:1px 3px;font-weight:700;line-height:1.2;z-index:1;}
   .song-info{flex:1;min-width:0}
-  .song-title{
-    font-size:14px;font-weight:700;color:#23303F;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    transition:color .2s;
-  }
-  .song-artist{font-size:12px;color:#94A3B4;margin-top:2px;transition:color .2s}
-  .like-btn{
-    display:flex;align-items:center;gap:5px;border:none;cursor:pointer;
-    border-radius:999px;padding:7px 12px;transition:transform .1s,background .2s;
-  }
+  .song-title{font-weight:700;color:#23303F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .song-artist{color:#94A3B4;margin-top:2px}
+  .like-btn{display:flex;align-items:center;border:none;cursor:pointer;border-radius:999px;transition:transform .1s,background .2s;}
   .like-btn:active{transform:scale(.9)}
-  .like-btn .heart{font-size:15px}
-  .like-btn .count{font-size:12px;font-weight:700;transition:color .2s}
+  .like-btn .count{font-weight:700}
 
-  /* ── Bottom player ── */
-  .player{
-    flex:none;
-    padding:0 16px;padding-bottom:env(safe-area-inset-bottom,0);
-    height:calc(86px + env(safe-area-inset-bottom,0px));
-    background:rgba(255,255,255,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    border-top:1px solid rgba(42,140,254,.18);
-    display:flex;align-items:center;gap:12px;
-  }
-  .player-cover{
-    flex:none;width:50px;height:50px;border-radius:14px;
-    display:flex;align-items:center;justify-content:center;font-size:24px;
-  }
+  #ytFrame{position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;}
+
+  .player{flex:none;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid rgba(42,140,254,.18);display:flex;flex-direction:column;justify-content:center;}
+  .player-main{display:flex;align-items:center;}
+  .player-cover{flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;transition:background .3s;overflow:hidden;}
+  .player-cover img{width:100%;height:100%;object-fit:cover;border-radius:13px;}
   .player-info{flex:1;min-width:0}
-  .player-title{
-    font-size:13px;font-weight:700;color:#23303F;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  }
-  .progress-track{margin-top:7px;height:5px;border-radius:999px;background:#E4EEF8}
-  .progress-fill{height:5px;border-radius:999px;background:linear-gradient(90deg,#2A8CFE,#00C6FB);transition:width .35s linear}
-  .play-btn{
-    flex:none;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
-    background:linear-gradient(135deg,#2A8CFE,#00C6FB);color:#fff;font-size:17px;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 5px 14px rgba(42,140,254,.4);transition:transform .1s;
-  }
+  .player-title{font-weight:700;color:#23303F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player-artist{color:#94A3B4;margin-top:2px}
+  .progress-wrap{margin-top:6px;height:14px;display:flex;align-items:center;cursor:pointer;}
+  .progress-track{width:100%;height:5px;border-radius:999px;background:#E4EEF8;}
+  .progress-fill{height:5px;border-radius:999px;background:linear-gradient(90deg,#2A8CFE,#00C6FB);width:0%;transition:width .3s linear;}
+  .progress-time{display:flex;justify-content:space-between;margin-top:3px;}
+  .progress-time span{font-size:10px;color:#B0B8C1;}
+  .ctrl{display:flex;align-items:center;}
+  .prev-btn,.next-btn{flex:none;border-radius:50%;border:none;cursor:pointer;background:#EEF4FB;color:#2A8CFE;display:flex;align-items:center;justify-content:center;transition:transform .1s;}
+  .prev-btn:active,.next-btn:active{transform:scale(.88)}
+  .play-btn{flex:none;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#2A8CFE,#00C6FB);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(42,140,254,.4);transition:transform .1s;}
   .play-btn:active{transform:scale(.92)}
 
-  /* ── Desktop: center and frame ── */
-  @media (min-width:481px){
-    body{
-      display:flex;align-items:center;justify-content:center;
-      background:radial-gradient(circle at 30% 20%,#E8F4FF,#DCEBFF 60%,#D2E4FF);
-    }
-    .app{
-      height:min(800px, 95vh);
-      border-radius:46px;overflow:hidden;
-      box-shadow:0 30px 70px rgba(40,90,160,.28);border:7px solid #fff;
-    }
+  /* 관리자 모달 */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;justify-content:center;}
+  .modal-bg.hidden{display:none}
+  .modal{background:#fff;border-radius:28px 28px 0 0;width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUp .28s ease;}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid #EAF1F8;flex:none;}
+  .modal-title{font-size:17px;font-weight:900;color:#23303F}
+  .modal-close{border:none;background:#EEF2F7;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .modal-body{flex:1;overflow-y:auto;padding:16px 20px 32px;}
+
+  .form-section{background:#F5FAFF;border-radius:16px;padding:16px;margin-bottom:20px;}
+  .form-title{font-size:13px;font-weight:800;color:#2A8CFE;margin-bottom:12px;}
+  .form-row{margin-bottom:10px;}
+  .form-label{font-size:11px;font-weight:700;color:#7A8A99;margin-bottom:4px;display:block;}
+  .form-input{width:100%;border:1.5px solid #DDE5EE;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:#23303F;outline:none;transition:border .18s;background:#fff;}
+  .form-input:focus{border-color:#2A8CFE;}
+  .emoji-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+  .emoji-opt{font-size:22px;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px 4px;transition:border .15s,transform .1s;}
+  .emoji-opt.sel{border-color:#2A8CFE;background:#EAF4FF;}
+  .color-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .color-opt{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border .15s,transform .1s;}
+  .color-opt.sel{border-color:#23303F;transform:scale(1.15);}
+  .add-btn{width:100%;border:none;cursor:pointer;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#2A8CFE,#00C6FB);color:#fff;box-shadow:0 4px 12px rgba(42,140,254,.35);transition:transform .1s,opacity .2s;margin-top:4px;}
+  .add-btn:active{transform:scale(.97)}
+
+  .yt-preview{display:none;align-items:center;gap:8px;border-radius:10px;padding:8px 12px;margin-top:6px;font-size:12px;}
+  .yt-preview.ok{display:flex;background:#F0FFF4;color:#22AA55;}
+  .yt-preview.err{display:flex;background:#FFF3F3;color:#FF4444;}
+
+  .mgmt-section-title{font-size:13px;font-weight:800;color:#23303F;margin-bottom:10px;}
+  .mgmt-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EAF1F8;}
+  .mgmt-cover{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;overflow:hidden;}
+  .mgmt-cover img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+  .mgmt-info{flex:1;min-width:0}
+  .mgmt-title{font-size:13px;font-weight:700;color:#23303F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mgmt-sub{font-size:11px;color:#94A3B4;margin-top:1px}
+  .mgmt-yt{font-size:10px;margin-top:2px;font-weight:700;}
+  .del-btn{flex:none;border:none;background:#FFE3EC;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .1s;}
+  .del-btn:active{transform:scale(.88)}
+  .empty-msg{text-align:center;padding:30px 0;color:#B0B8C1;font-size:13px;}
+
+  /* 토스트 */
+  .toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:#23303F;color:#fff;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:200;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* Responsive */
+  @media(max-width:479px){
+    .header-title{font-size:22px}.header-sub{font-size:11px}.tab-btn,.admin-btn{font-size:11px;padding:5px 10px}
+    .song-list{padding:6px 0 8px}.song-row{gap:10px;padding:10px 14px}.rank-wrap{width:24px}.rank-num{font-size:20px}
+    .cover-btn{width:46px;height:46px;font-size:22px}.song-title{font-size:13px}.song-artist{font-size:11px}
+    .like-btn{gap:4px;padding:6px 10px}.like-btn .heart{font-size:14px}.like-btn .count{font-size:11px}
+    .player{padding:10px 14px 12px;gap:5px}.player-main{gap:10px}
+    .player-cover{width:44px;height:44px}.player-title{font-size:12px}.player-artist{font-size:11px}
+    .ctrl{gap:6px}.prev-btn,.next-btn{width:28px;height:28px;font-size:11px}.play-btn{width:42px;height:42px;font-size:16px}
+  }
+  @media(min-width:480px) and (max-width:767px){
+    .app{max-width:480px;margin:0 auto}
+    .header-title{font-size:25px}.header-sub{font-size:12px}.tab-btn,.admin-btn{font-size:12px;padding:6px 12px}
+    .song-list{padding:8px 0 10px}.song-row{gap:11px;padding:11px 16px}.rank-wrap{width:26px}.rank-num{font-size:22px}
+    .cover-btn{width:50px;height:50px;font-size:25px}.song-title{font-size:14px}.song-artist{font-size:12px}
+    .like-btn{gap:5px;padding:7px 12px}.like-btn .heart{font-size:15px}.like-btn .count{font-size:12px}
+    .player{padding:10px 16px 14px;gap:6px}.player-main{gap:12px}
+    .player-cover{width:50px;height:50px}.player-title{font-size:13px}.player-artist{font-size:12px}
+    .ctrl{gap:8px}.prev-btn,.next-btn{width:32px;height:32px;font-size:13px}.play-btn{width:46px;height:46px;font-size:17px}
+  }
+  @media(min-width:768px) and (max-width:1023px){
+    body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#E0F0FF,#CCDEFF 60%,#BBCEF5);}
+    .app{width:420px;height:min(740px,90vh);border-radius:40px;overflow:hidden;box-shadow:0 24px 60px rgba(40,90,160,.26);border:6px solid #fff;}
+    .modal{max-width:420px}
+    .header-title{font-size:24px}.header-sub{font-size:12px}.tab-btn,.admin-btn{font-size:12px;padding:6px 12px}
+    .song-list{padding:8px 0 10px}.song-row{gap:12px;padding:12px 18px}.rank-wrap{width:28px}.rank-num{font-size:22px}
+    .cover-btn{width:52px;height:52px;font-size:26px}.song-title{font-size:14px}.song-artist{font-size:12px}
+    .like-btn{gap:5px;padding:7px 13px}.like-btn .count{font-size:12px}
+    .player{padding:10px 18px 14px;gap:6px}.player-main{gap:12px}
+    .player-cover{width:52px;height:52px}.player-title{font-size:14px}
+    .ctrl{gap:8px}.prev-btn,.next-btn{width:34px;height:34px;font-size:14px}.play-btn{width:48px;height:48px;font-size:18px}
+  }
+  @media(min-width:1024px) and (max-width:1439px){
+    body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#E8F4FF,#DCEBFF 60%,#D2E4FF);}
+    .app{width:460px;height:min(840px,92vh);border-radius:46px;overflow:hidden;box-shadow:0 30px 70px rgba(40,90,160,.28);border:7px solid #fff;}
+    .header-title{font-size:26px}.header-sub{font-size:13px}.tab-btn,.admin-btn{font-size:13px;padding:7px 14px}
+    .song-list{padding:10px 0 12px}.song-row{gap:13px;padding:13px 20px}.rank-wrap{width:30px}.rank-num{font-size:24px}
+    .cover-btn{width:56px;height:56px;font-size:27px}.song-title{font-size:15px}.song-artist{font-size:13px}
+    .like-btn{gap:6px;padding:8px 14px}.like-btn .count{font-size:13px}
+    .player{padding:10px 20px 14px;gap:6px}.player-main{gap:14px}
+    .player-cover{width:56px;height:56px}.player-title{font-size:14px}
+    .ctrl{gap:9px}.prev-btn,.next-btn{width:36px;height:36px;font-size:15px}.play-btn{width:50px;height:50px;font-size:19px}
+  }
+  @media(min-width:1440px){
+    body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 25% 20%,#DFF0FF,#C8DEFF 55%,#B8CEF8);}
+    .app{width:500px;height:min(860px,90vh);border-radius:50px;overflow:hidden;box-shadow:0 40px 90px rgba(30,80,160,.3);border:8px solid #fff;}
+    .header-title{font-size:28px}.header-sub{font-size:13px}.tab-btn,.admin-btn{font-size:13px;padding:7px 14px}
+    .song-list{padding:10px 0 14px}.song-row{gap:14px;padding:14px 22px}.rank-wrap{width:32px}.rank-num{font-size:26px}
+    .cover-btn{width:60px;height:60px;font-size:29px}.song-title{font-size:16px}.song-artist{font-size:13px}
+    .like-btn{gap:6px;padding:8px 16px}.like-btn .count{font-size:13px}
+    .player{padding:12px 22px 16px;gap:6px}.player-main{gap:16px}
+    .player-cover{width:60px;height:60px}.player-title{font-size:15px}
+    .ctrl{gap:10px}.prev-btn,.next-btn{width:38px;height:38px;font-size:16px}.play-btn{width:54px;height:54px;font-size:21px}
   }
 </style>
 </head>
 <body>
-
 <div class="app">
   <div class="header">
-    <div class="header-circle-1"></div>
-    <div class="header-circle-2"></div>
+    <div class="hc1"></div><div class="hc2"></div>
     <div class="header-inner">
-      <div class="status-bar"><span>9:41</span><span>🎧 키즈차트</span></div>
+      <div class="status-bar"><span>🎵 Guui Chart</span><span id="nowTime">9:41</span></div>
       <div class="header-content">
         <div class="header-title">Guui Music Chart 10 🎧</div>
         <div class="header-sub">오늘 친구들이 가장 좋아한 노래</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="hot">🔥 인기순</button>
+        <button class="tab-btn" data-tab="new">🆕 최신순</button>
+        <button class="tab-btn" data-tab="liked">❤️ 내가 좋아요</button>
+        <button class="admin-btn" id="adminBtn">⚙️ 관리</button>
       </div>
     </div>
   </div>
 
   <div class="song-list" id="songList"></div>
+  <div id="ytFrame"></div>
 
   <div class="player">
-    <div class="player-cover" id="playerCover"><span>🎵</span></div>
-    <div class="player-info">
-      <div class="player-title" id="playerTitle">재생할 노래를 골라보세요</div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="player-main">
+      <div class="player-cover" id="playerCover"><span>🎵</span></div>
+      <div class="player-info">
+        <div class="player-title" id="playerTitle">재생할 노래를 골라보세요</div>
+        <div class="player-artist" id="playerArtist"></div>
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div class="progress-time"><span id="timeCur">0:00</span><span id="timeTot">0:00</span></div>
+      </div>
+      <div class="ctrl">
+        <button class="prev-btn" id="prevBtn">⏮</button>
+        <button class="play-btn" id="playBtn">▶</button>
+        <button class="next-btn" id="nextBtn">⏭</button>
+      </div>
     </div>
-    <button class="play-btn" id="playBtn">▶</button>
   </div>
 </div>
 
+<!-- 관리자 모달 -->
+<div class="modal-bg hidden" id="modalBg">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⚙️ 곡 관리</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <div class="form-title">➕ 새 곡 추가</div>
+        <div class="form-row">
+          <label class="form-label">YouTube 링크 (선택)</label>
+          <input class="form-input" id="f-url" placeholder="https://www.youtube.com/watch?v=...">
+          <div class="yt-preview" id="ytPreview"></div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">곡 제목 *</label>
+          <input class="form-input" id="f-title" placeholder="예: 상어가족">
+        </div>
+        <div class="form-row">
+          <label class="form-label">아티스트 *</label>
+          <input class="form-input" id="f-artist" placeholder="예: 핑크퐁">
+        </div>
+        <div class="form-row">
+          <label class="form-label">이모지</label>
+          <div class="emoji-row" id="emojiRow"></div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">커버 색상</label>
+          <div class="color-row" id="colorRow"></div>
+        </div>
+        <button class="add-btn" id="addBtn">✅ 곡 추가하기</button>
+      </div>
+
+      <div class="mgmt-section-title">📋 등록된 곡 (<span id="songCount">0</span>곡)</div>
+      <div id="mgmtList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const songs = [
-  {id:'shark',   title:'상어가족',         artist:'핑크퐁',       emoji:'🦈', c1:'#36D1DC', c2:'#5B86E5', likes:58455, ord:0, liked:false},
-  {id:'bear',    title:'곰 세 마리',        artist:'동요나라',     emoji:'🐻', c1:'#F6D365', c2:'#FDA085', likes:67245, ord:1, liked:false},
-  {id:'star',    title:'반짝반짝 작은 별',   artist:'키즈싱어즈',   emoji:'⭐', c1:'#A18CD1', c2:'#FBC2EB', likes:44971, ord:2, liked:false},
-  {id:'flower',  title:'모두 다 꽃이야',     artist:'우리합창단',   emoji:'🌸', c1:'#FF9A9E', c2:'#FECFEF', likes:41921, ord:3, liked:false},
-  {id:'stop',    title:'그대로 멈춰라',      artist:'율동친구들',   emoji:'🛑', c1:'#FF6A88', c2:'#FF99AC', likes:71090, ord:4, liked:false},
-  {id:'head',    title:'머리 어깨 무릎 발',   artist:'체조교실',     emoji:'🙆', c1:'#43E97B', c2:'#38F9D7', likes:39210, ord:5, liked:false},
-  {id:'sun',     title:'둥근 해가 떴습니다',  artist:'아침동요',     emoji:'☀️', c1:'#FAD961', c2:'#F76B1C', likes:35120, ord:6, liked:false},
-  {id:'bike',    title:'자전거',            artist:'신나는음악',   emoji:'🚲', c1:'#4FACFE', c2:'#00F2FE', likes:29870, ord:7, liked:false},
-  {id:'rainbow', title:'무지개',            artist:'컬러키즈',     emoji:'🌈', c1:'#FA709A', c2:'#FEE140', likes:33450, ord:8, liked:false},
-  {id:'umbrella',title:'우산',              artist:'빗방울합창단', emoji:'☂️', c1:'#30CFD0', c2:'#5A4FCF', likes:26540, ord:9, liked:false},
+// ── 상수 ─────────────────────────────────────────────
+const STORAGE_KEY = 'guui_songs_v1';
+const EMOJIS = ['🦈','🐻','⭐','🌸','🛑','🙆','☀️','🚲','🌈','☂️','🎵','🎸','🎹','🥁','🎺','🎻','🦁','🐬','🌻','🍭'];
+const COLORS = [
+  ['#36D1DC','#5B86E5'],['#F6D365','#FDA085'],['#A18CD1','#FBC2EB'],
+  ['#FF9A9E','#FECFEF'],['#FF6A88','#FF99AC'],['#43E97B','#38F9D7'],
+  ['#FAD961','#F76B1C'],['#4FACFE','#00F2FE'],['#FA709A','#FEE140'],
+  ['#30CFD0','#5A4FCF'],['#667EEA','#764BA2'],['#F7971E','#FFD200'],
+];
+const DEFAULT_SONGS = [
+  {id:'shark',   title:'상어가족',        artist:'핑크퐁',       emoji:'🦈',c1:'#36D1DC',c2:'#5B86E5',likes:58455,ord:0,liked:false,isNew:false,ytId:'XqZsoesa55w'},
+  {id:'bear',    title:'곰 세 마리',       artist:'동요나라',     emoji:'🐻',c1:'#F6D365',c2:'#FDA085',likes:67245,ord:1,liked:false,isNew:false,ytId:''},
+  {id:'star',    title:'반짝반짝 작은 별',  artist:'키즈싱어즈',   emoji:'⭐',c1:'#A18CD1',c2:'#FBC2EB',likes:44971,ord:2,liked:false,isNew:true, ytId:''},
+  {id:'flower',  title:'모두 다 꽃이야',   artist:'우리합창단',   emoji:'🌸',c1:'#FF9A9E',c2:'#FECFEF',likes:41921,ord:3,liked:false,isNew:true, ytId:''},
+  {id:'stop',    title:'그대로 멈춰라',    artist:'율동친구들',   emoji:'🛑',c1:'#FF6A88',c2:'#FF99AC',likes:71090,ord:4,liked:false,isNew:false,ytId:''},
+  {id:'head',    title:'머리 어깨 무릎 발', artist:'체조교실',    emoji:'🙆',c1:'#43E97B',c2:'#38F9D7',likes:39210,ord:5,liked:false,isNew:true, ytId:''},
+  {id:'sun',     title:'둥근 해가 떴습니다',artist:'아침동요',    emoji:'☀️',c1:'#FAD961',c2:'#F76B1C',likes:35120,ord:6,liked:false,isNew:false,ytId:''},
+  {id:'bike',    title:'자전거',           artist:'신나는음악',  emoji:'🚲',c1:'#4FACFE',c2:'#00F2FE',likes:29870,ord:7,liked:false,isNew:true, ytId:''},
+  {id:'rainbow', title:'무지개',           artist:'컬러키즈',    emoji:'🌈',c1:'#FA709A',c2:'#FEE140',likes:33450,ord:8,liked:false,isNew:false,ytId:''},
+  {id:'umbrella',title:'우산',             artist:'빗방울합창단', emoji:'☂️',c1:'#30CFD0',c2:'#5A4FCF',likes:26540,ord:9,liked:false,isNew:true, ytId:''},
 ];
 
-let playing = {id: null, on: false};
-let progress = 0;
-
-function sorted() {
-  return [...songs].sort((a, b) => b.likes - a.likes || a.ord - b.ord);
+// ── localStorage 헬퍼 ─────────────────────────────────
+function loadSongs() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_SONGS.map(s=>({...s}));
+  } catch { return DEFAULT_SONGS.map(s=>({...s})); }
+}
+function saveSongs() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(songs)); } catch(e) { console.warn('저장 실패:', e); }
 }
 
-function rankColor(rank) {
-  if (rank === 1) return '#FF9F1C';
-  if (rank === 2) return '#8CA0B3';
-  if (rank === 3) return '#E08E45';
-  return '#B0B8C1';
+// ── 상태 ─────────────────────────────────────────────
+let songs = loadSongs();
+let playing = {id:null, on:false}, currentTab = 'hot';
+let selEmoji = EMOJIS[0], selColor = 0;
+let ytPlayer, ytReady = false, ytPendingId = null, ytDuration = 0, ytTimer = null;
+
+// ── 토스트 ────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function toggleLike(id) {
-  const s = songs.find(x => x.id === id);
-  if (!s) return;
-  s.liked = !s.liked;
-  s.likes += s.liked ? 1 : -1;
-  render();
+// ── YouTube API ───────────────────────────────────────
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('ytFrame', {
+    height:'1', width:'1',
+    playerVars:{autoplay:0, controls:0, playsinline:1, origin: location.origin},
+    events:{
+      onReady: () => { ytReady=true; if(ytPendingId){loadYT(ytPendingId);ytPendingId=null;} },
+      onStateChange: e => {
+        if(e.data===YT.PlayerState.PLAYING){
+          ytDuration=ytPlayer.getDuration();
+          document.getElementById('timeTot').textContent=fmt(ytDuration);
+          clearInterval(ytTimer); ytTimer=setInterval(tickProgress,500);
+          playing.on=true;
+        } else if(e.data===YT.PlayerState.PAUSED){
+          clearInterval(ytTimer); playing.on=false;
+        } else if(e.data===YT.PlayerState.ENDED){
+          clearInterval(ytTimer); playing.on=false; playNext(1);
+        }
+        document.getElementById('playBtn').textContent=playing.on?'⏸':'▶';
+        renderList();
+      }
+    }
+  });
+}
+(function(){ var s=document.createElement('script'); s.src='https://www.youtube.com/iframe_api'; document.head.appendChild(s); })();
+
+function loadYT(id){ if(!ytReady){ytPendingId=id;return;} ytPlayer.loadVideoById(id); }
+function fmt(s){ if(!s||isNaN(s))return'0:00'; const m=Math.floor(s/60),sc=Math.floor(s%60); return`${m}:${sc<10?'0'+sc:sc}`; }
+function tickProgress(){
+  if(!ytPlayer?.getCurrentTime)return;
+  const cur=ytPlayer.getCurrentTime(),dur=ytPlayer.getDuration()||1;
+  document.getElementById('progressFill').style.width=(cur/dur*100)+'%';
+  document.getElementById('timeCur').textContent=fmt(cur);
 }
 
-function playSong(id) {
-  if (playing.id === id) {
-    playing.on = !playing.on;
+// ── URL 파싱 ──────────────────────────────────────────
+function parseYTId(url){
+  try {
+    const u=new URL(url.trim());
+    if(u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('?')[0];
+    return u.searchParams.get('v')||'';
+  } catch { return ''; }
+}
+
+// ── 데이터 함수 ───────────────────────────────────────
+function getList(){
+  const l=[...songs];
+  if(currentTab==='hot')   return l.sort((a,b)=>b.likes-a.likes||a.ord-b.ord);
+  if(currentTab==='new')   return l.filter(s=>s.isNew).concat(l.filter(s=>!s.isNew));
+  if(currentTab==='liked') return l.filter(s=>s.liked).sort((a,b)=>b.likes-a.likes);
+  return l;
+}
+function rankColor(r){return r===1?'#FF9F1C':r===2?'#8CA0B3':r===3?'#E08E45':'#B0B8C1'}
+
+function toggleLike(id){
+  const s=songs.find(x=>x.id===id); if(!s)return;
+  s.liked=!s.liked; s.likes+=s.liked?1:-1;
+  saveSongs(); render();
+}
+
+function playSong(id){
+  const s=songs.find(x=>x.id===id); if(!s)return;
+  if(playing.id===id){
+    if(ytPlayer&&ytReady){ playing.on?ytPlayer.pauseVideo():ytPlayer.playVideo(); }
   } else {
-    playing = {id, on: true};
-    progress = 0;
+    playing={id,on:false};
+    if(s.ytId){ loadYT(s.ytId); }
   }
   render();
 }
+function playNext(dir){
+  const list=getList(); if(!list.length)return;
+  const idx=list.findIndex(s=>s.id===playing.id);
+  playSong(list[(idx+dir+list.length)%list.length].id);
+}
 
-function render() {
-  const list = sorted();
-  const container = document.getElementById('songList');
-  container.innerHTML = list.map((s, i) => {
-    const rank = i + 1;
-    return `
-      <div class="song-row">
-        <div class="rank-num" style="color:${rankColor(rank)}">${rank}</div>
-        <button class="cover-btn" style="background:linear-gradient(135deg,${s.c1},${s.c2})" data-play="${s.id}">
-          <span>${s.emoji}</span>
-        </button>
-        <div class="song-info">
-          <div class="song-title">${s.title}</div>
-          <div class="song-artist">${s.artist}</div>
-        </div>
-        <button class="like-btn" style="background:${s.liked ? '#FFE3EC' : '#EEF2F7'}" data-like="${s.id}">
-          <span class="heart">${s.liked ? '❤️' : '🤍'}</span>
-          <span class="count" style="color:${s.liked ? '#FF4D79' : '#9AA5B1'}">${s.likes.toLocaleString('ko-KR')}</span>
-        </button>
-      </div>`;
+// ── 렌더 ─────────────────────────────────────────────
+function renderList(){
+  const list=getList(), container=document.getElementById('songList');
+  if(currentTab==='liked'&&!list.length){
+    container.innerHTML=`<div style="text-align:center;padding:60px 20px;color:#B0B8C1;font-size:14px">❤️ 좋아요한 노래가 없어요!<br>노래 옆 하트를 눌러보세요</div>`;
+    return;
+  }
+  container.innerHTML=list.map((s,i)=>{
+    const rank=i+1, isP=playing.id===s.id;
+    const thumb=s.ytId?`https://img.youtube.com/vi/${s.ytId}/default.jpg`:'';
+    return`<div class="song-row">
+      <div class="rank-wrap"><div class="rank-num" style="color:${rankColor(rank)}">${rank}</div>${s.isNew?`<div class="rank-change" style="color:#2A8CFE">NEW</div>`:''}</div>
+      <button class="cover-btn" style="background:linear-gradient(135deg,${s.c1},${s.c2});box-shadow:${isP?`0 0 0 3px #fff,0 0 0 5px ${s.c1}`:''}" data-play="${s.id}">
+        ${thumb&&!isP?`<img src="${thumb}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`:``}
+        ${!thumb||isP?`<span>${isP&&playing.on?'⏸':s.emoji}</span>`:``}
+        ${s.ytId?`<span class="yt-badge">YT</span>`:''}
+      </button>
+      <div class="song-info">
+        <div class="song-title" style="color:${isP?'#2A8CFE':'#23303F'}">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+      </div>
+      <button class="like-btn" style="background:${s.liked?'#FFE3EC':'#EEF2F7'}" data-like="${s.id}">
+        <span class="heart">${s.liked?'❤️':'🤍'}</span>
+        <span class="count" style="color:${s.liked?'#FF4D79':'#9AA5B1'}">${s.likes.toLocaleString('ko-KR')}</span>
+      </button>
+    </div>`;
   }).join('');
-
-  container.querySelectorAll('[data-like]').forEach(btn => {
-    btn.addEventListener('click', () => toggleLike(btn.dataset.like));
-  });
-  container.querySelectorAll('[data-play]').forEach(btn => {
-    btn.addEventListener('click', () => playSong(btn.dataset.play));
-  });
-
-  const nowSong = playing.id ? songs.find(x => x.id === playing.id) : null;
-  const cover = document.getElementById('playerCover');
-  const title = document.getElementById('playerTitle');
-  const playBtnEl = document.getElementById('playBtn');
-
-  if (nowSong) {
-    cover.style.background = `linear-gradient(135deg,${nowSong.c1},${nowSong.c2})`;
-    cover.innerHTML = `<span>${nowSong.emoji}</span>`;
-    title.textContent = nowSong.title;
-    playBtnEl.textContent = playing.on ? '⏸' : '▶';
-  } else {
-    cover.style.background = 'linear-gradient(135deg,#E0E7F0,#CBD5E1)';
-    cover.innerHTML = '<span>🎵</span>';
-    title.textContent = '재생할 노래를 골라보세요';
-    playBtnEl.textContent = '▶';
-  }
-  document.getElementById('progressFill').style.width = Math.round(progress) + '%';
+  container.querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',()=>toggleLike(b.dataset.like)));
+  container.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>playSong(b.dataset.play)));
 }
 
-document.getElementById('playBtn').addEventListener('click', () => {
-  if (!playing.id) return;
-  playing.on = !playing.on;
-  render();
+function renderPlayer(){
+  const now=playing.id?songs.find(x=>x.id===playing.id):null;
+  const cover=document.getElementById('playerCover');
+  if(now){
+    cover.style.background=`linear-gradient(135deg,${now.c1},${now.c2})`;
+    const thumb=now.ytId?`https://img.youtube.com/vi/${now.ytId}/mqdefault.jpg`:'';
+    cover.innerHTML=thumb?`<img src="${thumb}" onerror="this.outerHTML='<span>${now.emoji}</span>'">`:`<span>${now.emoji}</span>`;
+    document.getElementById('playerTitle').textContent=now.title;
+    document.getElementById('playerArtist').textContent=now.artist;
+    document.getElementById('playBtn').textContent=playing.on?'⏸':'▶';
+  } else {
+    cover.style.background='linear-gradient(135deg,#E0E7F0,#CBD5E1)';
+    cover.innerHTML='<span>🎵</span>';
+    document.getElementById('playerTitle').textContent='재생할 노래를 골라보세요';
+    document.getElementById('playerArtist').textContent='';
+    document.getElementById('playBtn').textContent='▶';
+    document.getElementById('progressFill').style.width='0%';
+    document.getElementById('timeCur').textContent='0:00';
+    document.getElementById('timeTot').textContent='0:00';
+  }
+}
+
+function render(){ renderList(); renderPlayer(); }
+
+// ── 이벤트: 플레이어 ──────────────────────────────────
+document.getElementById('playBtn').addEventListener('click',()=>{
+  if(!playing.id)return;
+  if(ytPlayer&&ytReady){ playing.on?ytPlayer.pauseVideo():ytPlayer.playVideo(); }
+});
+document.getElementById('prevBtn').addEventListener('click',()=>playNext(-1));
+document.getElementById('nextBtn').addEventListener('click',()=>playNext(1));
+document.getElementById('progressWrap').addEventListener('click',e=>{
+  if(!ytPlayer||!ytReady)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const ratio=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  ytPlayer.seekTo(ratio*(ytPlayer.getDuration()||0),true);
+});
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    currentTab=btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); render();
+  });
 });
 
-setInterval(() => {
-  if (playing.on && playing.id) {
-    progress += 1.6;
-    if (progress >= 100) progress = 0;
-    document.getElementById('progressFill').style.width = Math.round(progress) + '%';
-  }
-}, 400);
+// ── 관리자 모달 ───────────────────────────────────────
+document.getElementById('adminBtn').addEventListener('click',()=>{
+  document.getElementById('modalBg').classList.remove('hidden');
+  renderMgmt();
+});
+document.getElementById('modalClose').addEventListener('click',()=>document.getElementById('modalBg').classList.add('hidden'));
+document.getElementById('modalBg').addEventListener('click',e=>{ if(e.target===e.currentTarget) document.getElementById('modalBg').classList.add('hidden'); });
+
+// 이모지 팔레트
+const emojiRow=document.getElementById('emojiRow');
+EMOJIS.forEach(em=>{
+  const s=document.createElement('span');
+  s.className='emoji-opt'+(em===selEmoji?' sel':'');
+  s.textContent=em;
+  s.addEventListener('click',()=>{ selEmoji=em; emojiRow.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel')); s.classList.add('sel'); });
+  emojiRow.appendChild(s);
+});
+
+// 색상 팔레트
+const colorRow=document.getElementById('colorRow');
+COLORS.forEach(([c1,c2],i)=>{
+  const d=document.createElement('div');
+  d.className='color-opt'+(i===0?' sel':'');
+  d.style.background=`linear-gradient(135deg,${c1},${c2})`;
+  d.addEventListener('click',()=>{ selColor=i; colorRow.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('sel')); d.classList.add('sel'); });
+  colorRow.appendChild(d);
+});
+
+// YouTube URL 검증
+document.getElementById('f-url').addEventListener('input',e=>{
+  const id=parseYTId(e.target.value), prev=document.getElementById('ytPreview');
+  if(id){ prev.className='yt-preview ok'; prev.textContent='✅ 유효한 링크 (ID: '+id+')'; }
+  else if(e.target.value.trim()){ prev.className='yt-preview err'; prev.textContent='❌ 유효한 YouTube 링크가 아니에요.'; }
+  else { prev.className='yt-preview'; }
+});
+
+// 곡 추가
+document.getElementById('addBtn').addEventListener('click',()=>{
+  const url   = document.getElementById('f-url').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+  const artist= document.getElementById('f-artist').value.trim();
+
+  if(!title){ showToast('⚠️ 곡 제목을 입력해주세요!'); return; }
+  if(!artist){ showToast('⚠️ 아티스트를 입력해주세요!'); return; }
+  const ytId = url ? parseYTId(url) : '';
+  if(url && !ytId){ showToast('❌ 유효한 YouTube 링크를 확인해주세요!'); return; }
+
+  const [c1,c2]=COLORS[selColor];
+  songs.push({ id:'s_'+Date.now(), title, artist, emoji:selEmoji, c1, c2, likes:0, ord:songs.length, liked:false, isNew:true, ytId });
+  saveSongs();
+
+  // 폼 초기화
+  document.getElementById('f-url').value='';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-artist').value='';
+  document.getElementById('ytPreview').className='yt-preview';
+
+  render(); renderMgmt();
+  showToast(`✅ "${title}" 추가 완료!`);
+});
+
+function renderMgmt(){
+  document.getElementById('songCount').textContent=songs.length;
+  const el=document.getElementById('mgmtList');
+  if(!songs.length){ el.innerHTML=`<div class="empty-msg">등록된 곡이 없어요</div>`; return; }
+  el.innerHTML=songs.map(s=>`
+    <div class="mgmt-row">
+      <div class="mgmt-cover" style="background:linear-gradient(135deg,${s.c1},${s.c2})">
+        ${s.ytId?`<img src="https://img.youtube.com/vi/${s.ytId}/default.jpg" onerror="this.outerHTML='${s.emoji}'">`:`${s.emoji}`}
+      </div>
+      <div class="mgmt-info">
+        <div class="mgmt-title">${s.title}</div>
+        <div class="mgmt-sub">${s.artist} · ❤️ ${s.likes.toLocaleString('ko-KR')}</div>
+        <div class="mgmt-yt" style="color:${s.ytId?'#2A8CFE':'#B0B8C1'}">${s.ytId?'▶ youtu.be/'+s.ytId:'YouTube 미등록'}</div>
+      </div>
+      <button class="del-btn" data-del="${s.id}">🗑</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    const s=songs.find(x=>x.id===b.dataset.del);
+    if(!s)return;
+    // confirm 대신 버튼 2단계 확인
+    if(b.dataset.confirm!=='1'){
+      b.dataset.confirm='1';
+      b.textContent='❗';
+      b.style.background='#FF4D79';
+      setTimeout(()=>{ b.dataset.confirm=''; b.textContent='🗑'; b.style.background='#FFE3EC'; },2500);
+      return;
+    }
+    songs=songs.filter(x=>x.id!==b.dataset.del);
+    if(playing.id===b.dataset.del){ playing={id:null,on:false}; if(ytPlayer&&ytReady)ytPlayer.stopVideo(); }
+    saveSongs(); render(); renderMgmt();
+    showToast(`🗑 "${s.title}" 삭제됨`);
+  }));
+}
+
+// 시계
+function updateTime(){ const d=new Date(),h=d.getHours(),m=d.getMinutes(); document.getElementById('nowTime').textContent=`${h}:${m<10?'0'+m:m}`; }
+updateTime(); setInterval(updateTime,30000);
 
 render();
 </script>
